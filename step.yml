@@ -17,6 +17,7 @@ description: |
 website: https://github.com/joergbirkhold/bitrise-step-appcenter-dsym-upload
 source_code_url: https://github.com/joergbirkhold/bitrise-step-appcenter-dsym-upload
 support_url: https://github.com/joergbirkhold/bitrise-step-appcenter-dsym-upload/issues
+version: 1.0.0
 host_os_tags:
   - osx-10.10
   - ubuntu-16.04

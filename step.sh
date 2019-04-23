@@ -13,7 +13,7 @@ envman add --key BITRISE_DSYM_PATH
 envman add --key BITRISE_IPA_PATH
 envman add --key BITRISE_APPCENTER_DIST_GROUP
 
-appcenter distribute release -g "$dist_group" -f "$ipa_path" --token $api_token --quiet
-appcenter crashes upload-symbols -s "$dsym_path" -a $app_id --token $api_token --quiet
+appcenter distribute release -g "$dist_group" -f "$ipa_path" --token $api_token 
+appcenter crashes upload-symbols -s "$dsym_path" -a $app_id --token $api_token 
 
 exit 0
