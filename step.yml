@@ -42,7 +42,7 @@ toolkit:
     entry_file: step.sh
 
 inputs:
- - dist_group: $BITRISE_APPCENTER_DIST_GROUP
+  - dist_group:
     opts:
       title: Appcenter Dist Group
       description: |
