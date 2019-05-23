@@ -7,6 +7,10 @@ description: |
   This step uploads APK + mapping.txt to AppCenter using official CLI.
   The step is relevant only for Android projects.
 
+  NB: mapping file upload is currently not supported by AppCenter and therefore has been commented out in the
+  script. Start this issue to raise the priority on AppCenter fixing this:
+  https://github.com/microsoft/appcenter-cli/issues/551
+
   By default $BITRISE_APK_PATH + $BITRISE_MAPPING_PATH env are used to lookup for APK and mapping file.
 
   It is important to [obtain API Token from AppCenter](https://appcenter.ms/settings/apitokens)

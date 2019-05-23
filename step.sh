@@ -14,6 +14,9 @@ envman add --key BITRISE_APK_PATH
 envman add --key BITRISE_APPCENTER_DIST_GROUP
 
 appcenter distribute release -g "$dist_group" -f "$apk_path" -a $app_id --token $api_token
-appcenter crashes upload-symbols -s "$mapping_path" -a $app_id --token $api_token
+# waiting for AppCenter to support uploading symbols for Android
+# see: https://github.com/microsoft/appcenter-cli/issues/551
+#
+# appcenter crashes upload-symbols -s "$mapping_path" -a $app_id --token $api_token
 
 exit 0
