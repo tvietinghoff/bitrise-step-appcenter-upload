@@ -1,22 +1,22 @@
 #
 title: |-
-  AppCenter IPA + dSYM upload
+  AppCenter apk + mapping upload
 summary: |
-  Upload IPA + dSYM to Microsoft AppCenter
+  Upload APK + mapping file to Microsoft AppCenter
 description: |
-  This step uploads IPA + dSYM to AppCenter using official CLI.
-  The step is relevant only for iOS projects (including Xamarin.iOS).
+  This step uploads APK + mapping.txt to AppCenter using official CLI.
+  The step is relevant only for Android projects.
 
-  By default $BITRISE_IPA_PATH + $BITRISE_DSYM_PATH env used to lookup for dSYM file.
-  If an archive step used as part of the workflow then a default value can be used 
-  for `dsym_path` variable
+  By default $BITRISE_APK_PATH + $BITRISE_MAPPING_PATH env are used to lookup for APK and mapping file.
 
   It is important to [obtain API Token from AppCenter](https://appcenter.ms/settings/apitokens)
   to use this step.
 
-website: https://github.com/joergbirkhold/bitrise-step-appcenter-dsym-upload
-source_code_url: https://github.com/joergbirkhold/bitrise-step-appcenter-dsym-upload
-support_url: https://github.com/joergbirkhold/bitrise-step-appcenter-dsym-upload/issues
+  Forked from: https://github.com/joergbirkhold/bitrise-step-appcenter-upload
+
+website: https://github.com/tvietinghoff/bitrise-step-appcenter-upload-android
+source_code_url: https://github.com/tvietinghoff/bitrise-step-appcenter-upload-android
+support_url: https://github.com/tvietinghoff/bitrise-step-appcenter-upload-android/issues
 version: 1.0.0
 host_os_tags:
   - osx-10.10
@@ -24,7 +24,7 @@ host_os_tags:
 type_tags:
   - deploy
 project_type_tags:
-- ios
+- android
 
 is_requires_admin_user: true
 is_always_run: false
@@ -46,21 +46,21 @@ inputs:
     opts:
       title: Appcenter Dist Group
       description: |
-        Name of teh Distribution Group.
+        Name of the distribution Group.
 
       is_required: true
-  - ipa_path: $BITRISE_IPA_PATH
+  - apk_path: $BITRISE_APK_PATH
     opts:
-      title: IPA path
+      title: APK path
       description: |
-        A path to IPA file to upload.
+        A path to APK file to upload. Usually provided by Android Build step
 
       is_required: true
-  - dsym_path: $BITRISE_DSYM_PATH
+  - mapping_path: $BITRISE_MAPPING_PATH
     opts:
-      title: dSYM path
+      title: proguard mapping file path
       description: |
-        A path to dSYM file to upload.
+        A path to proguard mapping file to upload. Usually provded by Android Build step
 
       is_required: true
 

@@ -9,11 +9,11 @@ else
   npm install -g appcenter-cli
 fi
 
-envman add --key BITRISE_DSYM_PATH
-envman add --key BITRISE_IPA_PATH
+envman add --key BITRISE_MAPPING_PATH
+envman add --key BITRISE_APK_PATH
 envman add --key BITRISE_APPCENTER_DIST_GROUP
 
-appcenter distribute release -g "$dist_group" -f "$ipa_path" -a $app_id --token $api_token 
-appcenter crashes upload-symbols -s "$dsym_path" -a $app_id --token $api_token 
+appcenter distribute release -g "$dist_group" -f "$apk_path" -a $app_id --token $api_token
+appcenter crashes upload-symbols -s "$mapping_path" -a $app_id --token $api_token
 
 exit 0
