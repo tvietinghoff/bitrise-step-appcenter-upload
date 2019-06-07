@@ -42,15 +42,17 @@ deps:
   - name: node
 
 toolkit:
-  bash:
-    entry_file: step.sh
+  go:
+    package_name: github.com/tvietinghoff/bitrise-step-appcenter-upload
 
 inputs:
   - dist_group: $BITRISE_APPCENTER_DIST_GROUP
     opts:
       title: Appcenter Dist Group
       description: |
-        Name of the distribution Group.
+        Name of the distribution Group. This can be either a single group or, when using with
+        an APK path list, a "|"-separated list of group mappings in the form of
+        apk-name-fragment=distributionGroup
 
       is_required: true
   - apk_path: $BITRISE_APK_PATH
