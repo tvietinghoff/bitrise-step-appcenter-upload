@@ -8,7 +8,7 @@ description: |
   The step is relevant only for Android projects.
 
   NB: mapping file upload is currently not supported by AppCenter and therefore has been commented out in the
-  script. Start this issue to raise the priority on AppCenter fixing this:
+  script. Watch this issue to raise the priority on AppCenter fixing this:
   https://github.com/microsoft/appcenter-cli/issues/551
 
   By default $BITRISE_APK_PATH + $BITRISE_MAPPING_PATH env are used to lookup for APK and mapping file.
@@ -21,7 +21,7 @@ description: |
 website: https://github.com/tvietinghoff/bitrise-step-appcenter-upload-android
 source_code_url: https://github.com/tvietinghoff/bitrise-step-appcenter-upload-android
 support_url: https://github.com/tvietinghoff/bitrise-step-appcenter-upload-android/issues
-version: 1.0.0
+version: 1.2.0
 host_os_tags:
   - osx-10.10
   - ubuntu-16.04
