@@ -120,11 +120,8 @@ func appcenterUpload(apk string, distributionGroup string, appId string, apiToke
 	//# see: https://github.com/microsoft/appcenter-cli/issues/551
 	//#
 	//# appcenter crashes upload-symbols -s "$mapping_path" -a $app_id --token $api_token
-	log.Warnf("appcenterUpload short-circuit, remove before deploy")
-	return true
 
-
-	err := exec.Command("appcenter", "distribute release -g", distributionGroup, "-f", apk, "-a", appId, "--token", apiToken).Run()
+	err := exec.Command("appcenter", "distribute", "release", "-g", distributionGroup, "-f", apk, "-a", appId, "--token", apiToken).Run()
 	if err != nil {
 		log.Errorf("Failed to distribute '%s' to '%s'\n%v", apk, distributionGroup, err)
 		return false
