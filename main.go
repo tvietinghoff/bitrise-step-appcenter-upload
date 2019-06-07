@@ -10,8 +10,8 @@ import (
 )
 
 type Conf struct {
-	ApkDistribution string `env:"dist_group,required"`
-	ApkPathList     string `env:"apk_path,required"`
+	ApkDistribution string `env:"dist_group_list,required"`
+	ApkPathList     string `env:"apk_path_list,required"`
 	AppId           string `env:"app_id,required"`
 	ApiToken        string `env:"api_token,required"`
 }
