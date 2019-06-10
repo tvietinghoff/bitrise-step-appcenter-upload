@@ -29,7 +29,7 @@ func splitElements(list []string, sep string) (s []string) {
 
 	for _, item := range temp {
 		item = strings.TrimSpace(item)
-		if len(item) > 0{
+		if len(item) > 0 {
 			s = append(s, item)
 		}
 	}
@@ -80,7 +80,7 @@ func main() {
 		if len(parts) < 2 {
 			distributionDefault = spec
 			log.Infof("Default distribution group set to '%s'", spec)
-		} else{
+		} else {
 			distributionSpecs[strings.TrimSpace(parts[0])] = strings.TrimSpace(parts[1])
 		}
 	}
@@ -88,6 +88,16 @@ func main() {
 	distributionCount := 0
 
 APK:
+
+	_, err := exec.LookPath("appcenter")
+	if err != nil {
+		log.Infof("appcenter cli not found, installing...")
+		err := exec.Command("npm", "install", "-g", "appcenter-cli").Run()
+		if err != nil {
+			fail("Failed to install appcenter cli %v\n", err)
+		}
+	}
+
 	for _, apk := range buildArtifactPaths {
 		extLen := len(filepath.Ext(apk))
 		base := filepath.Base(apk)
@@ -103,10 +113,13 @@ APK:
 				}
 			}
 		}
-		// no match found, use default distribution if present
-		log.Infof("Distributing %s to default AppCenter distribution group %s\n", apkName, distributionDefault)
-		if appcenterUpload(apk, distributionDefault, conf.AppId, conf.ApiToken) {
-			distributionCount++
+		if distributionDefault != "" {
+			// no match found, use default distribution if present
+			log.Infof("Distributing %s to default AppCenter distribution group %s\n", apkName, distributionDefault)
+			if appcenterUpload(apk, distributionDefault, conf.AppId, conf.ApiToken) {
+				distributionCount++
+				continue APK
+			}
 		}
 	}
 
