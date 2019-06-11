@@ -87,8 +87,6 @@ func main() {
 
 	distributionCount := 0
 
-APK:
-
 	_, err := exec.LookPath("appcenter")
 	if err != nil {
 		log.Infof("appcenter cli not found, installing...")
@@ -98,6 +96,7 @@ APK:
 		}
 	}
 
+APK:
 	for _, apk := range buildArtifactPaths {
 		extLen := len(filepath.Ext(apk))
 		base := filepath.Base(apk)
