@@ -48,9 +48,9 @@ toolkit:
 inputs:
   - dist_group_list: $BITRISE_APPCENTER_DIST_GROUP
     opts:
-      title: Appcenter Dist Group
+      title: Appcenter Dist Group List
       description: |
-        Name of the distribution Group. This can be either a single group or, when using with
+        Distribution Group(s). This can be either a single group or, when using with
         an APK path list, a "|"-separated list of group mappings in the form of
         apk-name-fragment=distributionGroup
 
@@ -62,13 +62,13 @@ inputs:
         A path to APK file to upload. Usually provided by Android Build step
 
       is_required: true
-  - mapping_path: $BITRISE_MAPPING_PATH
+  - upload_mappings: 1
     opts:
-      title: proguard mapping file path
+      title: enable proguard mapping file upload
       description: |
-        A path to proguard mapping file to upload. Usually provded by Android Build step
+        nonzero to enable upload of the proguard mapping files.
 
-      is_required: true
+      is_required: false
 
   - app_id: $BITRISE_APPCENTER_APP_ID
     opts:

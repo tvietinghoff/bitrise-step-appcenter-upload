@@ -1,11 +1,13 @@
 package main
 
 import (
+	"encoding/json"
 	"github.com/bitrise-io/go-utils/log"
 	"github.com/bitrise-tools/go-steputils/stepconf"
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strconv"
 	"strings"
 )
 
@@ -14,6 +16,14 @@ type Conf struct {
 	ApkPathList     string `env:"apk_path_list,required"`
 	AppId           string `env:"app_id,required"`
 	ApiToken        string `env:"api_token,required"`
+	Mappings        int    `env:"upload_mappings"`
+}
+
+type OutputInfo []struct {
+	ApkData struct {
+		VersionCode int    `json:"versionCode"`
+		VersionName string `json:"versionName"`
+	} `json:"apkData"`
 }
 
 func fail(message string, args ...interface{}) {
@@ -101,12 +111,49 @@ APK:
 		extLen := len(filepath.Ext(apk))
 		base := filepath.Base(apk)
 		apkName := base[:len(base)-extLen]
+		mapping := ""
+		versionCode := 0
+		versionName := ""
+
+		if conf.Mappings > 0 {
+
+			// build mapping file name, assume path is like for apk with last "apk" in path replaced by "mapping"
+			parts := strings.Split(filepath.Dir(apk), string(os.PathSeparator))
+			for i := len(parts) - 1; i >= 0; i-- {
+				if parts[i] == "apk" {
+					parts[i] = "mapping"
+					break
+				}
+			}
+
+			mapping = filepath.Join(strings.Join(parts, string(os.PathSeparator)), "mapping.txt")
+			var outputInfo OutputInfo
+
+			jsonFileName := filepath.Join(filepath.Dir(apk), "output.json")
+			outputJson, err := os.Open(jsonFileName)
+			if err == nil {
+				err = json.NewDecoder(outputJson).Decode(&outputInfo)
+			} else {
+				log.Warnf("Failed to read %s: %v\n", jsonFileName, err)
+			}
+			if err == nil {
+				for _, oi := range outputInfo {
+					versionCode = oi.ApkData.VersionCode
+					versionName = oi.ApkData.VersionName
+					if versionCode != 0 && versionName != "" {
+						break
+					}
+				}
+			} else {
+				log.Warnf("Failed to parse %s: %v\n", jsonFileName, err)
+			}
+		}
 
 		// find distribution group configured for variant
 		for key, groupName := range distributionSpecs {
 			if strings.Contains(apkName, key) {
 				log.Infof("Distributing %s to AppCenter distribution group %s\n", apkName, groupName)
-				if appcenterUpload(apk, groupName, conf.AppId, conf.ApiToken) {
+				if appcenterUpload(apk, groupName, conf.AppId, conf.ApiToken, mapping, versionName, versionCode) {
 					distributionCount++
 					continue APK
 				}
@@ -115,7 +162,7 @@ APK:
 		if distributionDefault != "" {
 			// no match found, use default distribution if present
 			log.Infof("Distributing %s to default AppCenter distribution group %s\n", apkName, distributionDefault)
-			if appcenterUpload(apk, distributionDefault, conf.AppId, conf.ApiToken) {
+			if appcenterUpload(apk, distributionDefault, conf.AppId, conf.ApiToken, mapping, versionName, versionCode) {
 				distributionCount++
 				continue APK
 			}
@@ -126,17 +173,25 @@ APK:
 	os.Exit(0)
 }
 
-func appcenterUpload(apk string, distributionGroup string, appId string, apiToken string) bool {
+func appcenterUpload(apk string, distributionGroup string, appId string, apiToken string, mapping string,
+	versionName string, versionCode int) bool {
 	// appcenter distribute release -g "$dist_group" -f "$apk_path" -a $app_id --token $api_token
 	//# waiting for AppCenter to support uploading symbols for Android
 	//# see: https://github.com/microsoft/appcenter-cli/issues/551
-	//#
-	//# appcenter crashes upload-symbols -s "$mapping_path" -a $app_id --token $api_token
 
-	err := exec.Command("appcenter", "distribute", "release", "-g", distributionGroup, "-f", apk, "-a", appId, "--token", apiToken).Run()
+	err := exec.Command("appcenter", "distribute", "release", "-g", distributionGroup, "-f", apk, "-a", appId,
+		"--token", apiToken).Run()
 	if err != nil {
 		log.Errorf("Failed to distribute '%s' to '%s'\n%v", apk, distributionGroup, err)
 		return false
+	}
+	if mapping != "" {
+		err = exec.Command("appcenter", "crashes", "upload-mappings", "--mapping", mapping, "--version-name",
+			versionName, "--version-code", strconv.Itoa(versionCode), "--token", apiToken).Run()
+		if err != nil {
+			// mapping upload failure is non-fatal
+			log.Errorf("Failed to upload mapping file '%s'\n%v", mapping, err)
+		}
 	}
 	return true
 }
