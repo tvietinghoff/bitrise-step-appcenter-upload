@@ -212,7 +212,7 @@ func appcenterUpload(apk string, distributionGroup string, appId string, apiToke
 		}
 
 		command := exec.Command("appcenter", "crashes", "upload-mappings", "--mapping", mapping, "--version-name",
-			versionName, "--version-code", strconv.Itoa(versionCode), "--token", apiToken)
+			versionName, "--version-code", strconv.Itoa(versionCode), "-a", appId, "--token", apiToken)
 		outBuf.Reset()
 		command.Stdout = &outBuf
 		command.Stderr = &outBuf
