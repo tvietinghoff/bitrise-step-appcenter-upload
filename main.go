@@ -205,16 +205,23 @@ func appcenterUpload(apk string, distributionGroup string, appId string, apiToke
 	}
 	if mapping != "" {
 
+		_, err = os.Stat(mapping)
+		if err != nil {
+			log.Errorf("Error locating mapping file '%s'\n%v", mapping, err)
+			return true
+		}
+
 		command := exec.Command("appcenter", "crashes", "upload-mappings", "--mapping", mapping, "--version-name",
 			versionName, "--version-code", strconv.Itoa(versionCode), "--token", apiToken)
 		outBuf.Reset()
 		command.Stdout = &outBuf
 		command.Stderr = &outBuf
+
+		err = command.Run()
 		if outBuf.Len() > 0 {
 			println(outBuf.String())
 		}
 
-		err = command.Run()
 		if err != nil {
 			// mapping upload failure is non-fatal
 			log.Errorf("Failed to upload mapping file '%s'\n%v", mapping, err)
