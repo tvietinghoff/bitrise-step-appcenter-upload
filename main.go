@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
 	"github.com/bitrise-io/go-utils/log"
 	"github.com/bitrise-tools/go-steputils/stepconf"
@@ -105,6 +106,14 @@ func main() {
 			fail("Failed to install appcenter cli %v\n", err)
 		}
 	}
+	command := exec.Command("appcenter", "--version")
+	var outBuf bytes.Buffer
+	command.Stdout = &outBuf
+	command.Stderr = &outBuf
+	err = command.Run()
+	if outBuf.Len() > 0 {
+		println(outBuf.String())
+	}
 
 APK:
 	for _, apk := range buildArtifactPaths {
@@ -178,16 +187,34 @@ func appcenterUpload(apk string, distributionGroup string, appId string, apiToke
 	// appcenter distribute release -g "$dist_group" -f "$apk_path" -a $app_id --token $api_token
 	//# waiting for AppCenter to support uploading symbols for Android
 	//# see: https://github.com/microsoft/appcenter-cli/issues/551
+	var outBuf bytes.Buffer
 
-	err := exec.Command("appcenter", "distribute", "release", "-g", distributionGroup, "-f", apk, "-a", appId,
-		"--token", apiToken).Run()
+	command := exec.Command("appcenter", "distribute", "release", "-g", distributionGroup, "-f", apk, "-a", appId,
+		"--token", apiToken)
+	command.Stdout = &outBuf
+	command.Stderr = &outBuf
+
+	err := command.Run()
+	if outBuf.Len() > 0 {
+		println(outBuf.String())
+	}
+
 	if err != nil {
 		log.Errorf("Failed to distribute '%s' to '%s'\n%v", apk, distributionGroup, err)
 		return false
 	}
 	if mapping != "" {
-		err = exec.Command("appcenter", "crashes", "upload-mappings", "--mapping", mapping, "--version-name",
-			versionName, "--version-code", strconv.Itoa(versionCode), "--token", apiToken).Run()
+
+		command := exec.Command("appcenter", "crashes", "upload-mappings", "--mapping", mapping, "--version-name",
+			versionName, "--version-code", strconv.Itoa(versionCode), "--token", apiToken)
+		outBuf.Reset()
+		command.Stdout = &outBuf
+		command.Stderr = &outBuf
+		if outBuf.Len() > 0 {
+			println(outBuf.String())
+		}
+
+		err = command.Run()
 		if err != nil {
 			// mapping upload failure is non-fatal
 			log.Errorf("Failed to upload mapping file '%s'\n%v", mapping, err)
