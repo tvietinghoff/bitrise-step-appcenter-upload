@@ -179,7 +179,11 @@ APK:
 	}
 
 	log.Infof("%d APKs successfully distributed", distributionCount)
-	os.Exit(0)
+	exitCode := 0
+	if distributionCount == 0 {
+		exitCode = 1
+	}
+	os.Exit(exitCode)
 }
 
 func appcenterUpload(apk string, distributionGroup string, appId string, apiToken string, mapping string,
